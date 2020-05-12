@@ -9,6 +9,7 @@ import java.awt.Point;
  */
 abstract class HeightMap extends Map 
 {
+	public static final int MAX_HEIGHT = 256;
 	private int[][] height_map;
 	
 	/**

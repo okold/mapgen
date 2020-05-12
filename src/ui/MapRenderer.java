@@ -9,17 +9,17 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import mapgen.WorldMap;
+import mapgen.BiomeMap;
 
 public class MapRenderer extends JFrame {
 
 	private static final long serialVersionUID = -349577414898672371L;
 	private static BufferedImage map_image;
-	private static WorldMap world_map;
+	private static BiomeMap world_map;
 	
 	public static void main(String[] args)
 	{
-		world_map = new WorldMap();
+		world_map = new BiomeMap();
 		map_image = new BufferedImage(world_map.getWidth(),world_map.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		generate();
 		

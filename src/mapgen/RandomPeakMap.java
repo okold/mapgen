@@ -48,7 +48,7 @@ public class RandomPeakMap extends HeightMap {
 		
 		while (count > 0)
 		{
-			int peak_height = rand.nextInt(256);
+			int peak_height = rand.nextInt(MAX_HEIGHT);
 			int peak_slope = rand.nextInt(10) + 1;
 			Point peak = new Point(rand.nextInt(getWidth()),rand.nextInt(getHeight()));
 			

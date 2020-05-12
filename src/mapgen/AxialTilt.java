@@ -19,7 +19,8 @@ package mapgen;
  */
 public class AxialTilt
 {
-	private static final double DEFAULT_TILT = 23.5;
+	public static final double DEFAULT_TILT = 23.5;
+	public static final double MAX_TILT = 90;
 	private double tilt;
 	
 	/**
