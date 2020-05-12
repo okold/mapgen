@@ -1,5 +1,7 @@
 package mapgen;
 
+import java.awt.Point;
+
 /**
  * A map that holds height information in each cell.
  *
@@ -28,35 +30,35 @@ abstract class HeightMap extends Map
 	}
 	
 	/**
-	 * Returns the height at the given x and y coordinates.
+	 * Returns the altitude at the given Point.
 	 */
-	public int getAltitude(int x, int y)
+	public int getAltitude(Point p)
 	{
-		return height_map[x][y];
+		return height_map[p.x][p.y];
 	}
 	
 	/**
-	 * Sets the height at the given x and y coordinates.
+	 * Sets the altitude at the given Point.
 	 */
-	public void setAltitude(int x, int y, int height)
+	public void setAltitude(Point p, int height)
 	{
-		height_map[x][y] = height;
+		height_map[p.x][p.y] = height;
 	}
 	
 	/**
-	 * Returns the height at the given latitude and longitude.
+	 * Returns the height at the given Coordinate.
 	 */
-	public int getAltitude(double lat, double lon)
+	public int getAltitude(Coordinate c)
 	{
-		return height_map[getXFromLon(lon)][getYFromLat(lat)];
+		return height_map[getX(c.getLongitude())][getY(c.getLatitude())];
 	}
 	
 	/**
-	 * Sets the height at the given latitude and longitude.
+	 * Sets the height at the given Coordinate.
 	 */
-	public void setAltitude(double lat, double lon, int height)
+	public void setAltitude(Coordinate c, int height)
 	{
-		height_map[getXFromLon(lon)][getYFromLat(lat)] = height;
+		height_map[getX(c.getLongitude())][getY(c.getLatitude())] = height;
 	}
 	
 	public abstract void generate();

@@ -1,5 +1,6 @@
 package mapgen;
 
+import java.awt.Point;
 import java.util.Random;
 
 public class WorldMap
@@ -20,9 +21,31 @@ public class WorldMap
 		height_map.generate();
 	}
 	
-	public boolean isWater(int x, int y)
+	public boolean isWater(Point p)
 	{
-		if (height_map.getAltitude(x, y) <= water_level)
+		if (height_map.getAltitude(p) <= water_level)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isCoast(Point p)
+	{
+		int altitude = height_map.getAltitude(p);
+		
+		if (altitude <= water_level && altitude >= water_level * 0.75)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isOcean(Point p)
+	{
+		if (isWater(p) && !isCoast(p))
 		{
 			return true;
 		}
@@ -32,7 +55,7 @@ public class WorldMap
 	
 	public boolean isFrigid(int y)
 	{
-		double lat = height_map.getLatFromY(y);
+		double lat = height_map.getLatitude(y);
 		if (axial_tilt.isFrigid(lat))
 		{
 			return true;
@@ -43,7 +66,7 @@ public class WorldMap
 	
 	public boolean isTropic(int y)
 	{
-		double lat = height_map.getLatFromY(y);
+		double lat = height_map.getLatitude(y);
 		if (axial_tilt.isTropic(lat))
 		{
 			return true;
@@ -54,7 +77,7 @@ public class WorldMap
 	
 	public boolean isTemperate(int y)
 	{
-		double lat = height_map.getLatFromY(y);
+		double lat = height_map.getLatitude(y);
 		if (axial_tilt.isTemperate(lat))
 		{
 			return true;
@@ -73,9 +96,9 @@ public class WorldMap
 		return height_map.getHeight();
 	}
 	
-	public int getAltitude(int x, int y)
+	public int getAltitude(Point p)
 	{
-		return height_map.getAltitude(x, y);
+		return height_map.getAltitude(p);
 	}
 	
 }

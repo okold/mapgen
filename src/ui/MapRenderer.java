@@ -3,6 +3,7 @@ package ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
@@ -43,29 +44,32 @@ public class MapRenderer extends JFrame {
     
     public static void generate()
     {
-    	for (int y = 0; y < world_map.getHeight(); y++)
+    	Point p = new Point(0,0);
+    	
+    	for (p.y = 0; p.y < world_map.getHeight(); p.y++)
 		{
-			for (int x = 0; x < world_map.getWidth(); x++)
+			for (p.x = 0; p.x < world_map.getWidth(); p.x++)
 			{
-				if (world_map.isWater(x,y))
+				
+				if (world_map.isWater(p))
 				{
-					map_image.setRGB(x, y, new Color(204, 229, 255).getRGB());
+					map_image.setRGB(p.x, p.y, new Color(204, 229, 255).getRGB());
 				}
-				else if (world_map.isFrigid(y) || world_map.getAltitude(x, y) > 200)
+				else if (world_map.getAltitude(p) > 150 && world_map.getAltitude(p) < 200)
 				{
-					map_image.setRGB(x, y, Color.WHITE.getRGB());
+					map_image.setRGB(p.x, p.y, Color.GRAY.getRGB());
 				}
-				else if (world_map.getAltitude(x, y) > 150)
+				else if (world_map.isFrigid(p.y) || world_map.getAltitude(p) >= 200)
 				{
-					map_image.setRGB(x, y, Color.GRAY.getRGB());
+					map_image.setRGB(p.x, p.y, Color.WHITE.getRGB());
 				}
-				else if (world_map.isTropic(y))
+				else if (world_map.isTropic(p.y))
 				{
-					map_image.setRGB(x, y, new Color(51, 102, 0).getRGB());
+					map_image.setRGB(p.x, p.y, new Color(51, 102, 0).getRGB());
 				}
 				else
 				{
-					map_image.setRGB(x, y, new Color(102,204,0).getRGB());
+					map_image.setRGB(p.x,p.y, new Color(102,204,0).getRGB());
 				}
 			}
 		}

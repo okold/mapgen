@@ -1,7 +1,16 @@
 package mapgen;
 
+import java.awt.Point;
 import java.util.Random;
 
+/**
+ * A height map made up of randomized points that spread out downward by
+ * random slopes. Creates a very square, abstract-looking map.
+ * 
+ * The values of the height range from 0 to 256.
+ *
+ * @author Olga Koldachenko
+ */
 public class RandomPeakMap extends HeightMap {
 
 	private static final int MAX_PEAKS = 100;
@@ -41,28 +50,25 @@ public class RandomPeakMap extends HeightMap {
 		{
 			int peak_height = rand.nextInt(256);
 			int peak_slope = rand.nextInt(10) + 1;
-			int peak_x = rand.nextInt(getWidth());
-			int peak_y = rand.nextInt(getHeight());
+			Point peak = new Point(rand.nextInt(getWidth()),rand.nextInt(getHeight()));
 			
-			if (getAltitude(peak_x,peak_y) > 0)
+			if (getAltitude(peak) > 0)
 			{
-				peak_height = getAltitude(peak_x,peak_y);
+				peak_height = getAltitude(peak);
 			}
 			
-			setAltitude(peak_x, peak_y, peak_height);
+			setAltitude(peak, peak_height);
 			
-			int current_x_east = peak_x + 1;
-			int current_x_west = peak_x - 1;
-			int current_y_north = peak_y - 1;
-			int current_y_south = peak_y + 1;
+			int current_x_east = peak.x + 1;
+			int current_x_west = peak.x - 1;
+			int current_y_north = peak.y - 1;
+			int current_y_south = peak.y + 1;
 			int current_height = peak_height - peak_slope;
 			
 			
 			while (current_height > 0)
 			{
-				int x;
-				int y = current_y_north;
-				
+				// edge case handling
 				if (current_y_north < 0)
 				{
 					current_y_north = 0;
@@ -73,7 +79,8 @@ public class RandomPeakMap extends HeightMap {
 					current_y_south = getHeight() - 1;
 				}
 				
-				for (x = current_x_west; x <= current_x_east; x++)
+				// generates north and south edges of square
+				for (int x = current_x_west; x <= current_x_east; x++)
 				{
 					int x_adj;
 					
@@ -86,54 +93,60 @@ public class RandomPeakMap extends HeightMap {
 						x_adj = getWidth() + x;
 					}
 					
-					if (getAltitude(x_adj,current_y_north) == 0)
+					Point north = new Point(x_adj, current_y_north);
+					Point south = new Point(x_adj, current_y_south);
+					
+					if (getAltitude(north) == 0)
 					{
-						setAltitude(x_adj,current_y_north,current_height);
+						setAltitude(north,current_height);
 					}
 					else
 					{
-						setAltitude(x_adj,current_y_north,(getAltitude(x_adj,current_y_north) + current_height) / 2);
+						setAltitude(north,(getAltitude(north) + current_height) / 2);
 					}
 					
-					if (getAltitude(x_adj,current_y_south) == 0)
+					if (getAltitude(south) == 0)
 					{
-						setAltitude(x_adj,current_y_south,current_height);
+						setAltitude(south,current_height);
 					}
 					else
 					{
-						setAltitude(x_adj,current_y_south,(getAltitude(x_adj,current_y_south) + current_height) / 2);
+						setAltitude(south,(getAltitude(south) + current_height) / 2);
 					}
 				}
 				
-				for (y = current_y_north + 1; y <= current_y_south - 1; y++)
+				// generates the east and west edges of the square
+				for (int y = current_y_north + 1; y <= current_y_south - 1; y++)
 				{
-					int x_west_adj;
+					
+					Point east = new Point(current_x_east % getWidth(), y);
+					Point west; 
 					
 					if (current_x_west < 0)
 					{
-						x_west_adj = 360 + current_x_west;
+						west = new Point(360 + current_x_west, y);
 					}
 					else
 					{
-						x_west_adj = current_x_west;
+						west = new Point(current_x_west, y);
 					}
 					
-					if (getAltitude(x_west_adj,y) == 0)
+					if (getAltitude(west) == 0)
 					{
-						setAltitude(x_west_adj,y,current_height);
+						setAltitude(west,current_height);
 					}
 					else
 					{
-						setAltitude(x_west_adj,y,(getAltitude(x_west_adj,y) + current_height) / 2);
+						setAltitude(west,(getAltitude(west) + current_height) / 2);
 					}
 					
-					if (getAltitude(current_x_east % getWidth(), y) == 0)
+					if (getAltitude(east) == 0)
 					{
-						setAltitude(current_x_east % getWidth(),y,current_height);
+						setAltitude(east,current_height);
 					}
 					else
 					{
-						setAltitude(current_x_east % getWidth(),y,(getAltitude(current_x_east % getWidth(),y) + current_height) / 2);
+						setAltitude(east,(getAltitude(east) + current_height) / 2);
 					}
 				}
 

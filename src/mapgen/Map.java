@@ -1,5 +1,7 @@
 package mapgen;
 
+import java.awt.Point;
+
 /**
  * The basis for an equirectangular world map using a grid system.
  * 
@@ -78,9 +80,25 @@ abstract class Map
 	}
 	
 	/**
+	 * Converts a Point to a Coordinate using this map's scale.
+	 */
+	public Point getPoint(Coordinate coord)
+	{
+		return new Point(getX(coord.getLongitude()), getY(coord.getLatitude()));
+	}
+	
+	/**
+	 * Converts a Coordinate to a Point using this map's scale.
+	 */
+	public Coordinate getCoordinate(Point point)
+	{
+		return new Coordinate(getLatitude(point.y), getLongitude(point.x));
+	}
+	
+	/**
 	 * Returns the latitude of the given row.
 	 */
-	public double getLatFromY(int y)
+	public double getLatitude(int y)
 	{
 		if (y == midpoint_y)
 		{
@@ -97,28 +115,9 @@ abstract class Map
 	}
 	
 	/**
-	 * Returns the row of the given latitude.
-	 */
-	public int getYFromLat(double lat)
-	{
-		if (lat == 0)
-		{
-			return midpoint_y;
-		}
-		else if (lat > 0)
-		{
-			return (int) ((90.0 - lat) * scale);
-		}
-		else
-		{
-			return (int) (midpoint_y - (lat * scale));
-		}
-	}
-	
-	/**
 	 * Returns the longitude of the given column.
 	 */
-	public double getLonFromX(int x)
+	public double getLongitude(int x)
 	{
 		if (x == midpoint_x)
 		{
@@ -137,7 +136,7 @@ abstract class Map
 	/**
 	 * Returns the column of the given longitude.
 	 */
-	public int getXFromLon(double lon)
+	public int getX(double lon)
 	{
 		if (lon == 0)
 		{
@@ -150,6 +149,25 @@ abstract class Map
 		else
 		{
 			return (int) ((lon * scale) + midpoint_x);
+		}
+	}
+	
+	/**
+	 * Returns the row of the given latitude.
+	 */
+	public int getY(double lat)
+	{
+		if (lat == 0)
+		{
+			return midpoint_y;
+		}
+		else if (lat > 0)
+		{
+			return (int) ((90.0 - lat) * scale);
+		}
+		else
+		{
+			return (int) (midpoint_y - (lat * scale));
 		}
 	}
 }
