@@ -154,4 +154,55 @@ public class SquarePeakMap extends HeightMap {
 			count--;
 		}
 	}
+
+	@Override
+	public HeightMap blend(int strength, int num_passes) 
+	{
+		if (num_passes <= 0)
+			return this;
+
+		HeightMap new_map = new SquarePeakMap(getScale());
+		
+		for (int x = 0; x < getWidth(); x++)
+		{
+			for (int y = 0; y < getHeight(); y++)
+			{
+				Point p = new Point(x, y);
+				int average = getAltitude(p);
+				
+				for (int i = -1 * strength; i <= strength; i++)
+				{
+					for (int j = -1 * strength; j <= strength; j++)
+					{
+						Point p2 = new Point(getXAdj(x + i), y + j);
+						if (pointExists(p2))
+						{
+							average = (average + getAltitude(p2)) / 2;
+						}
+					}
+				}
+				new_map.setAltitude(p, average);
+			}
+		}
+		
+		return new_map.blend(strength, num_passes - 1);
+	}
+
+	@Override
+	public HeightMap addNoise(int strength) {
+		HeightMap new_map = new SquarePeakMap(getScale());
+		
+		for (int x = 0; x < getWidth(); x++)
+		{
+			for (int y = 0; y < getHeight(); y++)
+			{
+				int noise_value = rand.nextInt(255);
+				Point p = new Point(x, y);
+				
+				new_map.setAltitude(p, (noise_value + getAltitude(p) * 5) / 6);
+			}
+		}
+		new_map = new_map.blend(10, 4);
+		return new_map;
+	}
 }

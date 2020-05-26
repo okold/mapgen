@@ -10,6 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import mapgen.*;
 
@@ -24,6 +27,7 @@ public class MapRenderer extends JFrame {
 	private static int water_level;
 	private static TiltedPlanet tilt;
 	
+	private static JSlider water_slider;
 	private static JLabel water_level_label;
 	private static JLabel tilt_label;
 	
@@ -39,9 +43,11 @@ public class MapRenderer extends JFrame {
 
 		water_level_label = new JLabel("Water Level:");
 		tilt_label = new JLabel("Axial Tilt:");
+		water_slider = new JSlider(JSlider.HORIZONTAL, 0, height_map.MAX_HEIGHT, water_level);
 		
 		JButton randomize_button = new JButton("Randomize");
 		info_panel.add(water_level_label);
+		info_panel.add(water_slider);
 		info_panel.add(tilt_label);
 		info_panel.add(randomize_button);
 		
@@ -55,6 +61,19 @@ public class MapRenderer extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				randomize();
 			}
+        });
+        
+        water_slider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				water_level = water_slider.getValue();
+				water_level_label.setText("Water Level: " + water_level);
+				map_panel.setImage(createImage());
+				map_panel.repaint();
+				
+			}
+        	
         });
         
         window.setVisible(true);
@@ -71,7 +90,9 @@ public class MapRenderer extends JFrame {
 	public static void randomize()
 	{
 		height_map.generate();
+		height_map = height_map.blend(1, 100);
 		water_level = rand.nextInt(255);
+		water_slider.setValue(water_level);
 		tilt.setTilt(rand.nextInt(90));
 		map_panel.setImage(createImage());
 		map_panel.revalidate();
@@ -94,9 +115,7 @@ public class MapRenderer extends JFrame {
 				
 				if (altitude <= water_level)
 				{
-					
-					
-					if (altitude < 0.75 * depth)
+					if (altitude < 0.75 * water_level)
 					{
 						image.setRGB(p.x, p.y, new Color(153, 204, 255).getRGB());
 					}
@@ -105,13 +124,13 @@ public class MapRenderer extends JFrame {
 						image.setRGB(p.x, p.y, new Color(204, 229, 255).getRGB());
 					}
 				}
-				else if (height_map.getAltitude(p) > HeightMap.MAX_HEIGHT - (depth / 3))
-				{
-					image.setRGB(p.x, p.y, Color.GRAY.getRGB());
-				}
 				else if (tilt.isFrigid(height_map.getLatitude(p.y)))
 				{
 					image.setRGB(p.x, p.y, Color.WHITE.getRGB());
+				}
+				else if (height_map.getAltitude(p) > HeightMap.MAX_HEIGHT - (depth / 3))
+				{
+					image.setRGB(p.x, p.y, Color.GRAY.getRGB());
 				}
 				else if (tilt.isTropic(height_map.getLatitude(p.y)))
 				{

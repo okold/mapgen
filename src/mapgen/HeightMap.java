@@ -70,5 +70,36 @@ public abstract class HeightMap extends Map
 		return false;
 	}
 	
+	public int getXAdj(int x)
+	{
+		if (x >= 0)
+			return x % getWidth();
+		
+
+		return getWidth() + x;
+		
+	}
+	
+	public int getYAdj(int y)
+	{
+		int y_adj = y;
+		
+		if (y_adj < 0)
+		{
+			y_adj *= -1;
+		}
+		
+		else if (y >= MAX_HEIGHT)
+		{
+			y_adj = MAX_HEIGHT - 1;
+		}
+		
+		return y_adj;
+	}
+	
+	public abstract HeightMap blend(int strength, int num_passes);
+	
+	public abstract HeightMap addNoise(int strength);
+	
 	public abstract void generate();
 }
