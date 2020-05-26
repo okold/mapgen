@@ -16,7 +16,7 @@ import java.awt.Point;
  * 
  * @author Olga Koldachenko
  */
-abstract class Map
+public abstract class Map
 {
 	protected static final int DEFAULT_WIDTH = 360;
 	protected static final int DEFAULT_HEIGHT = 180;

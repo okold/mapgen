@@ -7,7 +7,7 @@ import java.awt.Point;
  *
  * @author Olga Koldachenko
  */
-abstract class HeightMap extends Map 
+public abstract class HeightMap extends Map 
 {
 	public static final int MAX_HEIGHT = 256;
 	private int[][] height_map;
@@ -60,6 +60,14 @@ abstract class HeightMap extends Map
 	public void setAltitude(Coordinate c, int height)
 	{
 		height_map[getX(c.getLongitude())][getY(c.getLatitude())] = height;
+	}
+	
+	public boolean pointExists(Point p)
+	{
+		if (p.x >= 0 && p.x < getWidth() && p.y >= 0 && p.y < getHeight())
+			return true;
+
+		return false;
 	}
 	
 	public abstract void generate();

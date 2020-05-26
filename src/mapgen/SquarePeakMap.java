@@ -11,20 +11,20 @@ import java.util.Random;
  *
  * @author Olga Koldachenko
  */
-public class RandomPeakMap extends HeightMap {
+public class SquarePeakMap extends HeightMap {
 
-	private static final int MAX_PEAKS = 100;
+	private static final int MAX_PEAKS = 1000;
 	private int num_peaks;
 	private Random rand;
 	
-	public RandomPeakMap()
+	public SquarePeakMap()
 	{
 		super();
 		rand = new Random();
 		num_peaks = rand.nextInt(MAX_PEAKS);
 	}
 	
-	public RandomPeakMap(int scale)
+	public SquarePeakMap(int scale)
 	{
 		super(scale);
 		rand = new Random();
@@ -44,6 +44,14 @@ public class RandomPeakMap extends HeightMap {
 	@Override
 	public void generate()
 	{
+		for (int x = 0; x < getWidth(); x++)
+		{
+			for (int y = 0; y < getHeight(); y++)
+			{
+				setAltitude(new Point(x, y), 0);
+			}
+		}
+		
 		int count = num_peaks;
 		
 		while (count > 0)
@@ -52,10 +60,12 @@ public class RandomPeakMap extends HeightMap {
 			int peak_slope = rand.nextInt(10) + 1;
 			Point peak = new Point(rand.nextInt(getWidth()),rand.nextInt(getHeight()));
 			
+			/*
 			if (getAltitude(peak) > 0)
 			{
 				peak_height = getAltitude(peak);
 			}
+			*/
 			
 			setAltitude(peak, peak_height);
 			
@@ -96,22 +106,14 @@ public class RandomPeakMap extends HeightMap {
 					Point north = new Point(x_adj, current_y_north);
 					Point south = new Point(x_adj, current_y_south);
 					
-					if (getAltitude(north) == 0)
+					if (getAltitude(north) == 0 || getAltitude(north) < current_height);
 					{
 						setAltitude(north,current_height);
 					}
-					else
-					{
-						setAltitude(north,(getAltitude(north) + current_height) / 2);
-					}
 					
-					if (getAltitude(south) == 0)
+					if (getAltitude(south) == 0 || getAltitude(south) < current_height)
 					{
 						setAltitude(south,current_height);
-					}
-					else
-					{
-						setAltitude(south,(getAltitude(south) + current_height) / 2);
 					}
 				}
 				
@@ -131,22 +133,14 @@ public class RandomPeakMap extends HeightMap {
 						west = new Point(current_x_west, y);
 					}
 					
-					if (getAltitude(west) == 0)
+					if (getAltitude(west) == 0 || getAltitude(west) < current_height)
 					{
 						setAltitude(west,current_height);
 					}
-					else
-					{
-						setAltitude(west,(getAltitude(west) + current_height) / 2);
-					}
 					
-					if (getAltitude(east) == 0)
+					if (getAltitude(east) == 0 || getAltitude(east) < current_height)
 					{
 						setAltitude(east,current_height);
-					}
-					else
-					{
-						setAltitude(east,(getAltitude(east) + current_height) / 2);
 					}
 				}
 

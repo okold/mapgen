@@ -1,32 +1,33 @@
 package mapgen;
 
 /**
- * A calculator for the major circles of latitude using axial tilt.
+ * A planet with an axial tilt.
  * 
+ * Note:
  * Negative tilts will be calculated as positive tilts.
- * Tilts over 90 degrees will calculate as 90 degrees.
  * 
  * Calculates the:
  * - Latitude of the Arctic and Antarctic Circles
  * - Latitude of the Northern and Southern Tropics
  * 
  * Determines:
- * - Whether a given latitude is in the Arctic or Tropic
+ * - Whether a given latitude is in the Arctic, Tropic, or Temperate zones
  * 
  * All values are in decimal latitude.
  * 
  * @author Olga Koldachenko
  */
-public class AxialTilt
+public class TiltedPlanet
 {
-	public static final double DEFAULT_TILT = 23.5;
+	public static final double DEFAULT_TILT = 23.5; //Earth's tilt
 	public static final double MAX_TILT = 90;
+	
 	private double tilt;
 	
 	/**
 	 * Creates a circle of latitude calculator with Earth's axial tilt (23.5 degrees).
 	 */
-	public AxialTilt()
+	public TiltedPlanet()
 	{
 		tilt = DEFAULT_TILT;
 	}
@@ -34,16 +35,16 @@ public class AxialTilt
 	/**
 	 * Creates a circle of latitude calculator with a custom axial tilt.
 	 */
-	public AxialTilt(double tilt)
+	public TiltedPlanet(double tilt)
 	{
-		// correction for extreme values
 		if (tilt < 0)
 		{
 			tilt *= -1;
 		}
-		if (tilt > 90)
+		
+		while (tilt > MAX_TILT)
 		{
-			tilt = 90;
+			tilt = tilt - MAX_TILT;
 		}
 		
 		this.tilt = tilt;
@@ -78,7 +79,7 @@ public class AxialTilt
 	 */
 	public double getAntarcticCircle()
 	{
-		return tilt - 90;
+		return -1 * (90 - tilt);
 	}
 	
 	/**
@@ -104,12 +105,7 @@ public class AxialTilt
 	 */
 	public boolean arcticAtPoles()
 	{
-		if (tilt < 45)
-		{
-			return true;
-		}
-		
-		return false;
+		return tilt < 45;
 	}
 	
 	/**
@@ -117,27 +113,14 @@ public class AxialTilt
 	 */
 	public boolean isFrigid(double lat)
 	{
+
 		if (arcticAtPoles())
 		{
-			if (lat >= getArcticCircle() || lat <= getAntarcticCircle())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return lat >= getArcticCircle() || lat <= getAntarcticCircle();
 		}
 		else
 		{
-			if (lat <= getArcticCircle() && lat >= getAntarcticCircle())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return lat <= getArcticCircle() && lat >= getAntarcticCircle();
 		}
 	}
 	
@@ -148,25 +131,11 @@ public class AxialTilt
 	{
 		if (arcticAtPoles())
 		{
-			if (lat <= getNorthernTropic() && lat >= getSouthernTropic())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return lat <= getNorthernTropic() && lat >= getSouthernTropic();
 		}
 		else
 		{
-			if (lat >= getNorthernTropic() || lat <= getSouthernTropic())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return lat >= getNorthernTropic() || lat <= getSouthernTropic();
 		}
 	}
 	
@@ -177,27 +146,13 @@ public class AxialTilt
 	{
 		if (arcticAtPoles())
 		{
-			if ((lat < getArcticCircle() && lat > getNorthernTropic())
-					|| (lat < getSouthernTropic() && lat > getAntarcticCircle()))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return (lat < getArcticCircle() && lat > getNorthernTropic())
+					|| (lat < getSouthernTropic() && lat > getAntarcticCircle());
 		}
 		else
 		{
-			if ((lat < getNorthernTropic() && lat > getArcticCircle())
-					|| (lat < getAntarcticCircle() && lat > getSouthernTropic()))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return (lat < getNorthernTropic() && lat > getArcticCircle())
+					|| (lat < getAntarcticCircle() && lat > getSouthernTropic());
 		}
 	}
 }

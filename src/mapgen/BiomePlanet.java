@@ -3,24 +3,48 @@ package mapgen;
 import java.awt.Point;
 import java.util.Random;
 
-public class BiomeMap extends AxialTilt
+public class BiomePlanet extends TiltedPlanet
 {
 	private int scale;
 	private int water_level;
 	private HeightMap height_map;
+	private Random rand;
 	
-	public BiomeMap()
+	public BiomePlanet()
 	{
 		super();
 		
-		Random rand = new Random();
+		rand = new Random();
+		
 		setTilt(rand.nextInt((int) MAX_TILT));
-		water_level = rand.nextInt(height_map.MAX_HEIGHT / 2);
+		water_level = rand.nextInt(HeightMap.MAX_HEIGHT / 2);
 		
 		scale = 2;
-		height_map = new RandomPeakMap(scale);
+		height_map = new SquarePeakMap(scale);
 		height_map.generate();
 	}
+	
+	public void randomize()
+	{
+		setTilt(rand.nextInt((int) MAX_TILT));
+		water_level = rand.nextInt(HeightMap.MAX_HEIGHT / 2);
+		height_map.generate();
+	}
+	
+	
+	// getters and setters
+	
+	public int getWaterLevel()
+	{
+		return water_level;
+	}
+	
+	public void setWaterLevel(int level)
+	{
+		water_level = level;
+	}
+	
+	// biome determination
 	
 	public boolean isWater(Point p)
 	{
@@ -39,21 +63,21 @@ public class BiomeMap extends AxialTilt
 		return isWater(p) && !isCoast(p);
 	}
 	
-	// allow access of circle zones by point
+	// allow access of circle zones by Point
 	
-	public boolean isFrigid(int y)
+	public boolean isFrigid(Point p)
 	{
-		return isFrigid(height_map.getLatitude(y));
+		return isFrigid(height_map.getLatitude(p.y));
 	}
 	
-	public boolean isTropic(int y)
+	public boolean isTropic(Point p)
 	{
-		return isTropic(height_map.getLatitude(y));
+		return isTropic(height_map.getLatitude(p.y));
 	}
 	
-	public boolean isTemperate(int y)
+	public boolean isTemperate(Point p)
 	{
-		return isTemperate(height_map.getLatitude(y));
+		return isTemperate(height_map.getLatitude(p.y));
 	}
 	
 	// access height map attributes
