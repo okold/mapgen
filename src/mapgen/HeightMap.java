@@ -89,9 +89,9 @@ public abstract class HeightMap extends Map
 			y_adj *= -1;
 		}
 		
-		else if (y >= MAX_HEIGHT)
+		if (y >= getHeight())
 		{
-			y_adj = MAX_HEIGHT - 1;
+			y_adj = getHeight() - (y_adj - getHeight());
 		}
 		
 		return y_adj;

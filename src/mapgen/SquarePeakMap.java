@@ -174,7 +174,11 @@ public class SquarePeakMap extends HeightMap {
 				{
 					for (int j = -1 * strength; j <= strength; j++)
 					{
-						Point p2 = new Point(getXAdj(x + i), y + j);
+						Point p2 = new Point(getXAdj(x + i), getYAdj(y + j));
+						if (y + j >= getHeight())
+						{
+							p2.x = getXAdj(p2.x + getWidth() / 2);
+						}
 						if (pointExists(p2))
 						{
 							average = (average + getAltitude(p2)) / 2;
