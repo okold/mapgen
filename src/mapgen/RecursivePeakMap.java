@@ -11,7 +11,6 @@ import java.util.Random;
  */
 public class RecursivePeakMap extends HeightMap {
 
-	private static final int MAX_PEAKS = 10;
 	private static final int MAX_SLOPE = 100;
 	private static Random rand;
 	
@@ -35,9 +34,14 @@ public class RecursivePeakMap extends HeightMap {
 	@Override
 	public void generate()
 	{
-		for (int i = rand.nextInt(100) + 100; i > 0; i--)
+		for (int i = rand.nextInt(15) + 5; i > 0; i--)
 		{
-			generateLandmass(getRandomPoint(), rand.nextInt(MAX_HEIGHT), rand.nextInt(MAX_SLOPE), 200);
+			generateContinent(getRandomPoint());
+		}
+		
+		for (int i = rand.nextInt(100) + 50; i > 0; i--)
+		{
+			generateLandmass(getRandomPoint(), rand.nextInt(MAX_HEIGHT), rand.nextInt(MAX_SLOPE), rand.nextInt(100));
 		}
 	}
 	
@@ -61,13 +65,43 @@ public class RecursivePeakMap extends HeightMap {
 	 */
 	private void generateLandmass(Point p, int altitude, int slope, int length)
 	{
-		int new_x = getXAdj(p.x + rand.nextInt(8) - 4);
-		int new_y = getYAdj(p.y + rand.nextInt(8) - 4);
+		int new_x, new_y;
+		
+		switch (rand.nextInt(3))
+		{
+		case 0:
+			new_x = getXAdj(p.x - 3);
+			break;
+		case 1:
+			new_x = getXAdj(p.x + 3);
+			break;
+		default:
+			new_x = p.x;
+		}
+		
+		
+		switch (rand.nextInt(3))
+		{
+		case 0:
+			new_y = getYAdj(p.y - 3);
+			break;
+		case 1:
+			new_y = getYAdj(p.y + 3);
+			break;
+		default:
+			new_y = p.y;
+		}
+		
 		if(length > 0)
 		{
 			generatePeak(p, altitude, slope);
 			generateLandmass(new Point(new_x, new_y), altitude, slope, length - 1);
 		}
 		
+	}
+	
+	private void generateContinent(Point p)
+	{
+		generateLandmass(p, (int) (rand.nextInt((int) (MAX_HEIGHT * 0.8)) + (MAX_HEIGHT * 0.2)), 1, 5000);
 	}
 }

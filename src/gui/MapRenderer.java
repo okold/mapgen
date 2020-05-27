@@ -169,7 +169,7 @@ public class MapRenderer extends JFrame {
 				else if(planet.isTemperate(p))
 				{
 					if(planet.isMountainPeak(p))
-						image.setRGB(p.x, p.y, frigid_colour);
+						image.setRGB(p.x, p.y, frigid_mountain_colour);
 					else if (planet.isMountain(p))
 						image.setRGB(p.x, p.y, mountain_colour);
 					else
@@ -208,24 +208,29 @@ public class MapRenderer extends JFrame {
     	*/
     	
     	// Black borders around coastlines
-    	for (p.y = 0; p.y < height_map.getHeight(); p.y++)
-		{
-			for (p.x = 0; p.x < height_map.getWidth(); p.x++)
-			{
-				if (height_map.getAltitude(p) > planet.getWaterLevel())
-				for (int i = -1; i <= 1; i++)
-				{
-					for (int j = -1; j <= 1; j++)
-					{
-						Point p2 = new Point(p.x + i, p.y + j);
-						if (height_map.pointExists(p2) && height_map.getAltitude(p2) <= planet.getWaterLevel())
-						{
-							image.setRGB(p.x, p.y, Color.BLACK.getRGB());
-						}
-					}
-				}
-			}
-		}
+    	if (planet.getWaterLevel() > 0)
+    	{
+    		for (p.y = 0; p.y < height_map.getHeight(); p.y++)
+    		{
+    			for (p.x = 0; p.x < height_map.getWidth(); p.x++)
+    			{
+    				if (height_map.getAltitude(p) > planet.getWaterLevel())
+    				for (int i = -1; i <= 1; i++)
+    				{
+    					for (int j = -1; j <= 1; j++)
+    					{
+    						Point p2 = new Point(p.x + i, p.y + j);
+    						if (height_map.pointExists(p2) && height_map.getAltitude(p2) <= planet.getWaterLevel())
+    						{
+    							image.setRGB(p.x, p.y, Color.BLACK.getRGB());
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
+    	
+    	
     	return image;
     }
 }

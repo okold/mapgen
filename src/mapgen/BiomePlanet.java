@@ -52,7 +52,7 @@ public class BiomePlanet extends TiltedPlanet
 	 */
 	public boolean isWater(Point p)
 	{
-		return height_map.getAltitude(p) <= water_level;
+		return water_level > 0 && height_map.getAltitude(p) <= water_level;
 	}
 	
 	/**
@@ -63,7 +63,7 @@ public class BiomePlanet extends TiltedPlanet
 	{
 		int altitude = height_map.getAltitude(p);
 		
-		return altitude <= water_level && altitude >= water_level * 0.75;
+		return water_level > 0 && altitude <= water_level && altitude >= water_level * 0.75;
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class BiomePlanet extends TiltedPlanet
 	 */
 	public boolean isDeepOcean(Point p)
 	{
-		return height_map.getAltitude(p) < water_level * 0.33;
+		return water_level > 0 && height_map.getAltitude(p) < water_level * 0.33;
 	}
 	
 	/**
