@@ -89,8 +89,9 @@ public class MapRenderer extends JFrame {
 	
 	public static void randomize()
 	{
+		height_map = new SquarePeakMap(3);
 		height_map.generate();
-		height_map = height_map.blend(1, 100);
+		height_map = height_map.blend(2, 50);
 		water_level = rand.nextInt(255);
 		water_slider.setValue(water_level);
 		tilt.setTilt(rand.nextInt(90));

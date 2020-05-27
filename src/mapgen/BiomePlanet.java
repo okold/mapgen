@@ -1,36 +1,27 @@
 package mapgen;
 
 import java.awt.Point;
-import java.util.Random;
 
+/**
+ * A tilted planet with a height map and water level, determining
+ * coastlines and biomes.
+ *
+ * @author Olga Koldachenko
+ */
 public class BiomePlanet extends TiltedPlanet
 {
-	private int scale;
 	private int water_level;
 	private HeightMap height_map;
-	private Random rand;
 	
-	public BiomePlanet()
+	/**
+	 * Creates a BiomePlanet with the given parameters.
+	 */
+	public BiomePlanet(double tilt, int water_level, HeightMap height_map)
 	{
-		super();
-		
-		rand = new Random();
-		
-		setTilt(rand.nextInt((int) MAX_TILT));
-		water_level = rand.nextInt(HeightMap.MAX_HEIGHT / 2);
-		
-		scale = 2;
-		height_map = new SquarePeakMap(scale);
-		height_map.generate();
+		super(tilt);
+		this.water_level = water_level;
+		this.height_map = height_map;
 	}
-	
-	public void randomize()
-	{
-		setTilt(rand.nextInt((int) MAX_TILT));
-		water_level = rand.nextInt(HeightMap.MAX_HEIGHT / 2);
-		height_map.generate();
-	}
-	
 	
 	// getters and setters
 	
@@ -44,13 +35,30 @@ public class BiomePlanet extends TiltedPlanet
 		water_level = level;
 	}
 	
+	public HeightMap getHeightMap()
+	{
+		return height_map;
+	}
+	
+	public void setHeightMap(HeightMap height_map)
+	{
+		this.height_map = height_map;
+	}
+	
 	// biome determination
 	
+	/**
+	 * True if the given point contains water.
+	 */
 	public boolean isWater(Point p)
 	{
 		return height_map.getAltitude(p) <= water_level;
 	}
 	
+	/**
+	 * True if the given point is shallow water, in the top 25%
+	 * of the planet's water level.
+	 */
 	public boolean isCoast(Point p)
 	{
 		int altitude = height_map.getAltitude(p);
@@ -58,9 +66,26 @@ public class BiomePlanet extends TiltedPlanet
 		return altitude <= water_level && altitude >= water_level * 0.75;
 	}
 	
+	/**
+	 * True if the given point is deep water, in the bottom 75%
+	 * of the planet's water level.
+	 */
 	public boolean isOcean(Point p)
 	{
 		return isWater(p) && !isCoast(p);
+	}
+	
+	/**
+	 * True if the given point is in the top 25% of landmass, determined
+	 * using max height. Note if no peaks reach the top 25%, then no
+	 * mountains will be determined.
+	 */
+	public boolean isMountain(Point p)
+	{
+		int altitude = height_map.getAltitude(p);
+		int total_height = HeightMap.MAX_HEIGHT - water_level;
+		
+		return altitude >= HeightMap.MAX_HEIGHT - (0.25 * total_height);
 	}
 	
 	// allow access of circle zones by Point
@@ -78,27 +103,5 @@ public class BiomePlanet extends TiltedPlanet
 	public boolean isTemperate(Point p)
 	{
 		return isTemperate(height_map.getLatitude(p.y));
-	}
-	
-	// access height map attributes
-	
-	public int getWidth()
-	{
-		return height_map.getWidth();
-	}
-	
-	public int getHeight()
-	{
-		return height_map.getHeight();
-	}
-	
-	public int getAltitude(Point p)
-	{
-		return height_map.getAltitude(p);
-	}
-	
-	public int getAltitude(Coordinate c)
-	{
-		return height_map.getAltitude(c);
 	}
 }

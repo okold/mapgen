@@ -7,7 +7,7 @@ import java.awt.Point;
  *
  * @author Olga Koldachenko
  */
-public abstract class HeightMap extends Map 
+public class HeightMap extends Map 
 {
 	public static final int MAX_HEIGHT = 256;
 	private int[][] height_map;
@@ -62,6 +62,9 @@ public abstract class HeightMap extends Map
 		height_map[getX(c.getLongitude())][getY(c.getLatitude())] = height;
 	}
 	
+	/**
+	 * True if the given Point exists in the map.
+	 */
 	public boolean pointExists(Point p)
 	{
 		if (p.x >= 0 && p.x < getWidth() && p.y >= 0 && p.y < getHeight())
@@ -70,36 +73,112 @@ public abstract class HeightMap extends Map
 		return false;
 	}
 	
+	/**
+	 * Returns the adjusted x value, wrapping around the edges if
+	 * greater than or less than the bounds of the grid.
+	 */
 	public int getXAdj(int x)
 	{
-		if (x >= 0)
-			return x % getWidth();
+		while (x < 0)
+		{
+			x = getWidth() + x;
+		}
 		
-
-		return getWidth() + x;
-		
+		return x % getWidth();
 	}
 	
+	/**
+	 * Returns the adjusted y value, reflecting it along the top
+	 * and bottom edges.
+	 * 
+	 * Gotta be a better way to do this.
+	 */
 	public int getYAdj(int y)
 	{
 		int y_adj = y;
 		
-		if (y_adj < 0)
+		while (y_adj < 0)
 		{
 			y_adj *= -1;
+			
+			if (y_adj > getHeight())
+				y_adj = getHeight() - (y_adj - getHeight());
 		}
 		
-		if (y >= getHeight())
+		if (y_adj >= getHeight())
+			y_adj = getHeight() - 1;
+		
+		if (y_adj < 0)
 		{
-			y_adj = getHeight() - (y_adj - getHeight());
+			y_adj = 0;
 		}
 		
 		return y_adj;
 	}
 	
-	public abstract HeightMap blend(int strength, int num_passes);
+	/**
+	 * Blends the values in the map by averaging each point using the heights
+	 * of the points around it, in a square the size of the strength parameter,
+	 * and returns the blended map.
+	 * 
+	 * Note that the type of the new HeightMap, if calling using a child of this class, 
+	 * becomes generic HeightMap, and calling generate() afterwards will create a 
+	 * flat map.
+	 * 
+	 * Recurses over the process num_passes times.
+	 */
+	public HeightMap blend(int strength, int num_passes)
+	{
+		if (num_passes <= 0)
+			return this;
+
+		if (strength < 0)
+			strength *= -1;
+		
+		HeightMap new_map = new HeightMap(getScale());
+		
+		for (int x = 0; x < getWidth(); x++)
+		{
+			for (int y = 0; y < getHeight(); y++)
+			{
+				Point p = new Point(x, y);
+				int average = getAltitude(p);
+				
+				for (int i = -1 * strength; i <= strength; i++)
+				{
+					for (int j = -1 * strength; j <= strength; j++)
+					{
+						Point p2 = new Point(getXAdj(x + i), getYAdj(y + j));
+						
+						// averages wrapping y values using the opposite hemisphere
+						if (y + j >= getHeight() || y + j < 0)
+							p2.x = getXAdj(p2.x + getWidth() / 2);
+						
+						if (pointExists(p2))
+							average = (average + getAltitude(p2)) / 2;
+					}
+				}
+				new_map.setAltitude(p, average);
+			}
+		}
+		
+		return new_map.blend(strength, num_passes - 1);
+	}
 	
-	public abstract HeightMap addNoise(int strength);
-	
-	public abstract void generate();
+	/**
+	 * Generates a flat map with every value being at the midpoint of the
+	 * maximum possible height.
+	 */
+	public void generate()
+	{
+		int midpoint = MAX_HEIGHT / 2;
+		
+		for (int x = 0; x < getWidth(); x++)
+		{
+			for (int y = 0; y < getHeight(); y++)
+			{
+				height_map[x][y] = midpoint;
+			}
+		}
+	}
 }
