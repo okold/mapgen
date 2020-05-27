@@ -40,20 +40,8 @@ public class MapRenderer extends JFrame {
 		
 		JPanel info_panel = new JPanel();
 
-		water_level_label = new JLabel("Water Level:");
-		tilt_label = new JLabel("Axial Tilt:");
-		water_slider = new JSlider(JSlider.HORIZONTAL, 0, height_map.MAX_HEIGHT, water_level);
-		
+		// RANDOMIZE BUTTON
 		JButton randomize_button = new JButton("Randomize");
-		info_panel.add(water_level_label);
-		info_panel.add(water_slider);
-		info_panel.add(tilt_label);
-		info_panel.add(randomize_button);
-		
-		MapRenderer window = new MapRenderer();
-		window.add(map_panel);
-        window.add(info_panel, BorderLayout.SOUTH);
-		
         randomize_button.addActionListener(new ActionListener() {
 
 			@Override
@@ -61,7 +49,32 @@ public class MapRenderer extends JFrame {
 				randomize();
 			}
         });
+		info_panel.add(randomize_button);
         
+		
+		// BLEND BUTTON
+		JButton blend_button = new JButton("Blend");
+        blend_button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				planet.setHeightMap(planet.getHeightMap().blend(2, 1));
+				map_panel.setImage(createImage());
+				map_panel.revalidate();
+				map_panel.repaint();
+				
+			}
+        });
+		info_panel.add(blend_button);
+		
+		
+        // WATER LEVEL SLIDER
+		water_level_label = new JLabel("Water Level:");
+		water_slider = new JSlider(JSlider.HORIZONTAL, 0, HeightMap.MAX_HEIGHT, water_level);
+		
+		info_panel.add(water_level_label);
+		info_panel.add(water_slider);
         water_slider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -75,6 +88,15 @@ public class MapRenderer extends JFrame {
         	
         });
         
+        
+        // TODO: AXIAL TILT SLIDER
+        tilt_label = new JLabel("Axial Tilt:");
+		info_panel.add(tilt_label);
+
+		
+		MapRenderer window = new MapRenderer();
+		window.add(map_panel);
+        window.add(info_panel, BorderLayout.SOUTH);
         window.setVisible(true);
 	}
 
@@ -88,9 +110,8 @@ public class MapRenderer extends JFrame {
 	
 	public static void randomize()
 	{
-		HeightMap height_map = new SquarePeakMap(3);
+		HeightMap height_map = new RecursivePeakMap(3);
 		height_map.generate();
-		height_map = height_map.blend(2, 50);
 		int water_level = rand.nextInt(255);
 		
 		planet.setTilt(rand.nextInt(90));
@@ -156,9 +177,7 @@ public class MapRenderer extends JFrame {
 				}
 				else
 				{
-					if(planet.isMountainPeak(p))
-						image.setRGB(p.x, p.y, frigid_colour);
-					else if (planet.isMountain(p))
+					if (planet.isMountain(p))
 						image.setRGB(p.x, p.y, mountain_colour);
 					else
 						image.setRGB(p.x, p.y, tropical_colour);

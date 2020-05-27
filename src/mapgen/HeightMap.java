@@ -1,6 +1,7 @@
 package mapgen;
 
 import java.awt.Point;
+import java.util.Random;
 
 /**
  * A map that holds height information in each cell.
@@ -9,7 +10,7 @@ import java.awt.Point;
  */
 public class HeightMap extends Map 
 {
-	public static final int MAX_HEIGHT = 256;
+	public static final int MAX_HEIGHT = 1000;
 	private int[][] height_map;
 	
 	/**
@@ -150,15 +151,17 @@ public class HeightMap extends Map
 					{
 						Point p2 = new Point(getXAdj(x + i), getYAdj(y + j));
 						
-						// averages wrapping y values using the opposite hemisphere
-						if (y + j >= getHeight() || y + j < 0)
-							p2.x = getXAdj(p2.x + getWidth() / 2);
+						System.out.println(p2);
+						int altitude_2 = getAltitude(p2);
 						
-						if (pointExists(p2))
-							average = (average + getAltitude(p2)) / 2;
+						if (altitude_2 > 0)
+						{
+							average += altitude_2;
+							average /= 2;
+						}
 					}
 				}
-				new_map.setAltitude(p, average);
+				new_map.height_map[x][y] = average;
 			}
 		}
 		
@@ -180,5 +183,11 @@ public class HeightMap extends Map
 				height_map[x][y] = midpoint;
 			}
 		}
+	}
+	
+	public Point getRandomPoint()
+	{
+		Random rand = new Random();
+		return new Point(rand.nextInt(getWidth()), rand.nextInt(getHeight()));
 	}
 }
