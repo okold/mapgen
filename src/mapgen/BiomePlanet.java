@@ -67,20 +67,37 @@ public class BiomePlanet extends TiltedPlanet
 	}
 	
 	/**
-	 * True if the given point is deep water, in the bottom 75%
+	 * True if the given point is deep water, in the bottom 25%
 	 * of the planet's water level.
 	 */
-	public boolean isOcean(Point p)
+	public boolean isDeepOcean(Point p)
 	{
-		return isWater(p) && !isCoast(p);
+		return height_map.getAltitude(p) < water_level * 0.33;
 	}
 	
 	/**
-	 * True if the given point is in the top 25% of landmass, determined
-	 * using max height. Note if no peaks reach the top 25%, then no
-	 * mountains will be determined.
+	 * True if the given point is ocean water, between the coasts and deep ocean.
+	 */
+	public boolean isOcean(Point p)
+	{
+		return isWater(p) && !isCoast(p) && !isDeepOcean(p);
+	}
+	
+	/**
+	 * True if the given point is in the top 50% of landmass.
 	 */
 	public boolean isMountain(Point p)
+	{
+		int altitude = height_map.getAltitude(p);
+		int total_height = HeightMap.MAX_HEIGHT - water_level;
+		
+		return altitude >= HeightMap.MAX_HEIGHT - (0.50 * total_height);
+	}
+	
+	/**
+	 * True if the given point is in the top 25% of landmass.
+	 */
+	public boolean isMountainPeak(Point p)
 	{
 		int altitude = height_map.getAltitude(p);
 		int total_height = HeightMap.MAX_HEIGHT - water_level;

@@ -22,10 +22,7 @@ public class MapRenderer extends JFrame {
 	private static ImagePanel map_panel;
 	
 	private static Random rand;
-	
-	private static HeightMap height_map;
-	private static int water_level;
-	private static TiltedPlanet tilt;
+	private static BiomePlanet planet;
 	
 	private static JSlider water_slider;
 	private static JLabel water_level_label;
@@ -33,9 +30,11 @@ public class MapRenderer extends JFrame {
 	
 	public static void main(String[] args)
 	{
-		height_map = new SquarePeakMap(3);
-		water_level = 100;
-		tilt = new TiltedPlanet();
+		HeightMap height_map = new SquarePeakMap(3);
+		int water_level = 100;
+		double tilt = 23.5;
+		planet = new BiomePlanet(tilt, water_level, height_map);
+		
 		rand = new Random();
 		map_panel = new ImagePanel(createImage());
 		
@@ -67,8 +66,8 @@ public class MapRenderer extends JFrame {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				water_level = water_slider.getValue();
-				water_level_label.setText("Water Level: " + water_level);
+				planet.setWaterLevel(water_slider.getValue());
+				water_level_label.setText("Water Level: " + water_slider.getValue());
 				map_panel.setImage(createImage());
 				map_panel.repaint();
 				
@@ -89,72 +88,118 @@ public class MapRenderer extends JFrame {
 	
 	public static void randomize()
 	{
-		height_map = new SquarePeakMap(3);
+		HeightMap height_map = new SquarePeakMap(3);
 		height_map.generate();
 		height_map = height_map.blend(2, 50);
-		water_level = rand.nextInt(255);
-		water_slider.setValue(water_level);
-		tilt.setTilt(rand.nextInt(90));
+		int water_level = rand.nextInt(255);
+		
+		planet.setTilt(rand.nextInt(90));
+		planet.setHeightMap(height_map);
+		planet.setWaterLevel(water_level);
+		
 		map_panel.setImage(createImage());
 		map_panel.revalidate();
 		map_panel.repaint();
 		water_level_label.setText("Water Level: " + water_level);
-		tilt_label.setText("Axial Tilt: " + tilt.getTilt());
+		tilt_label.setText("Axial Tilt: " + planet.getTilt());
 	}
 	
     public static BufferedImage createImage()
     {
+		int coast_colour = new Color(30, 90, 124).getRGB();
+		int ocean_colour = new Color(26, 74, 94).getRGB();
+		int deep_ocean_colour = new Color(17, 67, 92).getRGB();
+		int frigid_mountain_colour = new Color(252, 253, 255).getRGB();
+		int frigid_colour = new Color(228, 231, 238).getRGB();
+		int mountain_colour = new Color(137, 128, 97).getRGB();
+		int temperate_colour = new Color(124, 156, 83).getRGB();
+		int tropical_colour = new Color(87, 133, 68).getRGB();
+		
     	Point p = new Point(0,0);
+    	
+    	HeightMap height_map = planet.getHeightMap();
+    	
     	BufferedImage image = new BufferedImage(height_map.getWidth(),height_map.getHeight(),BufferedImage.TYPE_INT_ARGB);
     	
     	for (p.y = 0; p.y < height_map.getHeight(); p.y++)
 		{
 			for (p.x = 0; p.x < height_map.getWidth(); p.x++)
 			{
-				int altitude = height_map.getAltitude(p);
-				int depth = HeightMap.MAX_HEIGHT - water_level;
 				
-				if (altitude <= water_level)
+				if (planet.isCoast(p))
 				{
-					if (altitude < 0.75 * water_level)
-					{
-						image.setRGB(p.x, p.y, new Color(153, 204, 255).getRGB());
-					}
+					image.setRGB(p.x, p.y, coast_colour);
+				}
+				else if(planet.isOcean(p))
+				{
+					image.setRGB(p.x, p.y, ocean_colour);
+				}
+				else if(planet.isDeepOcean(p))
+				{
+					image.setRGB(p.x, p.y, deep_ocean_colour);
+				} 
+				else if(planet.isFrigid(p))
+				{
+					if(planet.isMountain(p))
+						image.setRGB(p.x, p.y, frigid_mountain_colour);
 					else
-					{
-						image.setRGB(p.x, p.y, new Color(204, 229, 255).getRGB());
-					}
+						image.setRGB(p.x, p.y, frigid_colour);
 				}
-				else if (tilt.isFrigid(height_map.getLatitude(p.y)))
+				else if(planet.isTemperate(p))
 				{
-					image.setRGB(p.x, p.y, Color.WHITE.getRGB());
-				}
-				else if (height_map.getAltitude(p) > HeightMap.MAX_HEIGHT - (depth / 3))
-				{
-					image.setRGB(p.x, p.y, Color.GRAY.getRGB());
-				}
-				else if (tilt.isTropic(height_map.getLatitude(p.y)))
-				{
-					image.setRGB(p.x, p.y, new Color(51, 102, 0).getRGB());
+					if(planet.isMountainPeak(p))
+						image.setRGB(p.x, p.y, frigid_colour);
+					else if (planet.isMountain(p))
+						image.setRGB(p.x, p.y, mountain_colour);
+					else
+						image.setRGB(p.x, p.y, temperate_colour);
 				}
 				else
 				{
-					image.setRGB(p.x,p.y, new Color(102,204,0).getRGB());
+					if(planet.isMountainPeak(p))
+						image.setRGB(p.x, p.y, frigid_colour);
+					else if (planet.isMountain(p))
+						image.setRGB(p.x, p.y, mountain_colour);
+					else
+						image.setRGB(p.x, p.y, tropical_colour);
 				}
 			}
 		}
     	
+    	/* This works, but is STUPIDLY EXPENSIVE
+    	// Borders between deep/mid ocean
     	for (p.y = 0; p.y < height_map.getHeight(); p.y++)
 		{
 			for (p.x = 0; p.x < height_map.getWidth(); p.x++)
 			{
-				if (height_map.getAltitude(p) > water_level)
+				if (planet.isOcean(p))
+				for (int i = -10; i <= 10; i++)
+				{
+					for (int j = -10; j <= 10; j++)
+					{
+						Point p2 = new Point(p.x + i, p.y + j);
+						if (height_map.pointExists(p2) && planet.isDeepOcean(p2))
+						{
+							image.setRGB(p.x, p.y, (ocean_colour + deep_ocean_colour) / 2);
+						}
+					}
+				}
+			}
+		}
+    	*/
+    	
+    	// Black borders around coastlines
+    	for (p.y = 0; p.y < height_map.getHeight(); p.y++)
+		{
+			for (p.x = 0; p.x < height_map.getWidth(); p.x++)
+			{
+				if (height_map.getAltitude(p) > planet.getWaterLevel())
 				for (int i = -1; i <= 1; i++)
 				{
 					for (int j = -1; j <= 1; j++)
 					{
 						Point p2 = new Point(p.x + i, p.y + j);
-						if (height_map.pointExists(p2) && height_map.getAltitude(p2) <= water_level)
+						if (height_map.pointExists(p2) && height_map.getAltitude(p2) <= planet.getWaterLevel())
 						{
 							image.setRGB(p.x, p.y, Color.BLACK.getRGB());
 						}
