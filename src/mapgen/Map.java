@@ -68,7 +68,7 @@ public abstract class Map
 	 */
 	public int getWidth()
 	{
-		return scale * DEFAULT_WIDTH + 1;
+		return scale * DEFAULT_WIDTH;
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public abstract class Map
 	 */
 	public int getHeight()
 	{
-		return scale * DEFAULT_HEIGHT + 1;
+		return scale * DEFAULT_HEIGHT;
 	}
 	
 	/**

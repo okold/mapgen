@@ -116,11 +116,11 @@ public class TiltedPlanet
 
 		if (arcticAtPoles())
 		{
-			return lat >= getArcticCircle() || lat <= getAntarcticCircle();
+			return lat > getArcticCircle() || lat < getAntarcticCircle();
 		}
 		else
 		{
-			return lat <= getArcticCircle() && lat >= getAntarcticCircle();
+			return lat < getArcticCircle() && lat > getAntarcticCircle();
 		}
 	}
 	
@@ -131,11 +131,11 @@ public class TiltedPlanet
 	{
 		if (arcticAtPoles())
 		{
-			return lat <= getNorthernTropic() && lat >= getSouthernTropic();
+			return lat < getNorthernTropic() && lat > getSouthernTropic();
 		}
 		else
 		{
-			return lat >= getNorthernTropic() || lat <= getSouthernTropic();
+			return lat > getNorthernTropic() || lat < getSouthernTropic();
 		}
 	}
 	
@@ -146,13 +146,13 @@ public class TiltedPlanet
 	{
 		if (arcticAtPoles())
 		{
-			return (lat < getArcticCircle() && lat > getNorthernTropic())
-					|| (lat < getSouthernTropic() && lat > getAntarcticCircle());
+			return (lat <= getArcticCircle() && lat >= getNorthernTropic())
+					|| (lat <= getSouthernTropic() && lat >= getAntarcticCircle());
 		}
 		else
 		{
-			return (lat < getNorthernTropic() && lat > getArcticCircle())
-					|| (lat < getAntarcticCircle() && lat > getSouthernTropic());
+			return (lat <= getNorthernTropic() && lat >= getArcticCircle())
+					|| (lat <= getAntarcticCircle() && lat >= getSouthernTropic());
 		}
 	}
 }

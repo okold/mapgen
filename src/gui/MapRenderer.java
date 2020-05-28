@@ -27,6 +27,7 @@ public class MapRenderer extends JFrame {
 	private static JSlider water_slider;
 	private static JLabel water_level_label;
 	private static JLabel tilt_label;
+	private static JSlider tilt_slider;
 	
 	public static void main(String[] args)
 	{
@@ -52,23 +53,6 @@ public class MapRenderer extends JFrame {
 		info_panel.add(randomize_button);
         
 		
-		// BLEND BUTTON
-		JButton blend_button = new JButton("Blend");
-        blend_button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				planet.setHeightMap(planet.getHeightMap().blend(2, 1));
-				map_panel.setImage(createImage());
-				map_panel.revalidate();
-				map_panel.repaint();
-				
-			}
-        });
-		info_panel.add(blend_button);
-		
-		
         // WATER LEVEL SLIDER
 		water_level_label = new JLabel("Water Level:");
 		water_slider = new JSlider(JSlider.HORIZONTAL, 0, HeightMap.MAX_HEIGHT, water_level);
@@ -91,7 +75,21 @@ public class MapRenderer extends JFrame {
         
         // TODO: AXIAL TILT SLIDER
         tilt_label = new JLabel("Axial Tilt:");
+        tilt_slider = new JSlider(JSlider.HORIZONTAL, 0, 90, (int) tilt);
 		info_panel.add(tilt_label);
+		info_panel.add(tilt_slider);
+		tilt_slider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				planet.setTilt(tilt_slider.getValue());
+				tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
+				map_panel.setImage(createImage());
+				map_panel.repaint();
+				
+			}
+			
+		});
 
 		
 		MapRenderer window = new MapRenderer();
@@ -112,17 +110,22 @@ public class MapRenderer extends JFrame {
 	{
 		HeightMap height_map = new RecursivePeakMap(3);
 		height_map.generate();
-		int water_level = rand.nextInt(255);
+		int water_level = rand.nextInt(HeightMap.MAX_HEIGHT);
 		
-		planet.setTilt(rand.nextInt(90));
+		
+		int tilt = rand.nextInt(91);
 		planet.setHeightMap(height_map);
 		planet.setWaterLevel(water_level);
+		water_slider.setValue(water_level);
+		water_level_label.setText("Water Level: " + water_slider.getValue());
+		tilt_slider.setValue(tilt);
+		tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
+		tilt_label.setText("Axial Tilt: " + planet.getTilt());
 		
 		map_panel.setImage(createImage());
 		map_panel.revalidate();
 		map_panel.repaint();
-		water_level_label.setText("Water Level: " + water_level);
-		tilt_label.setText("Axial Tilt: " + planet.getTilt());
+		
 	}
 	
     public static BufferedImage createImage()
@@ -132,6 +135,7 @@ public class MapRenderer extends JFrame {
 		int deep_ocean_colour = new Color(17, 67, 92).getRGB();
 		int frigid_mountain_colour = new Color(252, 253, 255).getRGB();
 		int frigid_colour = new Color(228, 231, 238).getRGB();
+		int frigid_water = new Color(185, 190, 209).getRGB();
 		int mountain_colour = new Color(137, 128, 97).getRGB();
 		int temperate_colour = new Color(124, 156, 83).getRGB();
 		int tropical_colour = new Color(87, 133, 68).getRGB();
@@ -149,7 +153,10 @@ public class MapRenderer extends JFrame {
 				
 				if (planet.isCoast(p))
 				{
-					image.setRGB(p.x, p.y, coast_colour);
+					if (planet.isFrigid(p))
+						image.setRGB(p.x, p.y, frigid_water);
+					else	
+						image.setRGB(p.x, p.y, coast_colour);
 				}
 				else if(planet.isOcean(p))
 				{
@@ -207,6 +214,7 @@ public class MapRenderer extends JFrame {
 		}
     	*/
     	
+    	/*
     	// Black borders around coastlines
     	if (planet.getWaterLevel() > 0)
     	{
@@ -229,7 +237,7 @@ public class MapRenderer extends JFrame {
     			}
     		}
     	}
-    	
+    	*/
     	
     	return image;
     }

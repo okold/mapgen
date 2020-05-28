@@ -34,14 +34,19 @@ public class RecursivePeakMap extends HeightMap {
 	@Override
 	public void generate()
 	{
-		for (int i = rand.nextInt(15) + 5; i > 0; i--)
+		for (int i = rand.nextInt(5) + 5; i > 0; i--)
 		{
-			generateContinent(getRandomPoint());
+			generateLandmass(getRandomPoint(), (int) (rand.nextInt((int) (MAX_HEIGHT * 0.2)) + (MAX_HEIGHT * 0.8)), 1, 5000);
+		}
+		
+		for (int i = rand.nextInt(100) + 100; i > 0; i--)
+		{
+			generateLandmass(getRandomPoint(), rand.nextInt((int) (MAX_HEIGHT * 0.8)), rand.nextInt(MAX_SLOPE), rand.nextInt(100));
 		}
 		
 		for (int i = rand.nextInt(100) + 50; i > 0; i--)
 		{
-			generateLandmass(getRandomPoint(), rand.nextInt(MAX_HEIGHT), rand.nextInt(MAX_SLOPE), rand.nextInt(100));
+			generateLandmass(getRandomPoint(), rand.nextInt(200), 1, 5000);
 		}
 	}
 	
@@ -98,10 +103,5 @@ public class RecursivePeakMap extends HeightMap {
 			generateLandmass(new Point(new_x, new_y), altitude, slope, length - 1);
 		}
 		
-	}
-	
-	private void generateContinent(Point p)
-	{
-		generateLandmass(p, (int) (rand.nextInt((int) (MAX_HEIGHT * 0.8)) + (MAX_HEIGHT * 0.2)), 1, 5000);
 	}
 }

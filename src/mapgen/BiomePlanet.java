@@ -84,25 +84,25 @@ public class BiomePlanet extends TiltedPlanet
 	}
 	
 	/**
-	 * True if the given point is in the top 75% of landmass.
+	 * True if the given point is in the top 90% of landmass.
 	 */
 	public boolean isMountain(Point p)
 	{
 		int altitude = height_map.getAltitude(p);
 		int total_height = HeightMap.MAX_HEIGHT - water_level;
 		
-		return altitude >= HeightMap.MAX_HEIGHT - (0.25 * total_height);
+		return altitude >= HeightMap.MAX_HEIGHT - (0.1 * total_height);
 	}
 	
 	/**
-	 * True if the given point is in the top 90% of landmass.
+	 * True if the given point is in the top 95% of landmass.
 	 */
 	public boolean isMountainPeak(Point p)
 	{
 		int altitude = height_map.getAltitude(p);
 		int total_height = HeightMap.MAX_HEIGHT - water_level;
 		
-		return altitude >= HeightMap.MAX_HEIGHT - (0.1 * total_height);
+		return altitude >= HeightMap.MAX_HEIGHT - (0.05 * total_height);
 	}
 	
 	// allow access of circle zones by Point
@@ -114,7 +114,12 @@ public class BiomePlanet extends TiltedPlanet
 	
 	public boolean isTropic(Point p)
 	{
-		return isTropic(height_map.getLatitude(p.y));
+		if (getTilt() > 0 && getTilt() < 90)
+		{
+			return isTropic(height_map.getLatitude(p.y));
+		}
+
+		return false;
 	}
 	
 	public boolean isTemperate(Point p)

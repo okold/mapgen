@@ -127,6 +127,9 @@ public class HeightMap extends Map
 	 * flat map.
 	 * 
 	 * Recurses over the process num_passes times.
+	 * 
+	 * Super expensive...
+	 * 
 	 */
 	public HeightMap blend(int strength, int num_passes)
 	{
