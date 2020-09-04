@@ -1,6 +1,7 @@
 package mapgen;
 
 import java.awt.Point;
+import java.util.Random;
 
 /**
  * A tilted planet with a height map and water level, determining
@@ -125,5 +126,14 @@ public class BiomePlanet extends TiltedPlanet
 	public boolean isTemperate(Point p)
 	{
 		return isTemperate(height_map.getLatitude(p.y));
+	}
+	
+	public void randomize()
+	{
+		Random rand = new Random();
+		height_map = new RecursivePeakMap(3);
+		height_map.generate();
+		water_level = rand.nextInt(HeightMap.MAX_HEIGHT);
+		setTilt(rand.nextInt(91));
 	}
 }

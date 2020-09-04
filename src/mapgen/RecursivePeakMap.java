@@ -36,7 +36,7 @@ public class RecursivePeakMap extends HeightMap {
 	{
 		for (int i = rand.nextInt(5) + 5; i > 0; i--)
 		{
-			generateLandmass(getRandomPoint(), (int) (rand.nextInt((int) (MAX_HEIGHT * 0.2)) + (MAX_HEIGHT * 0.8)), 1, 5000);
+			generateLandmass(getRandomPoint(), (int) (rand.nextInt((int) (MAX_HEIGHT * 0.2)) + (MAX_HEIGHT * 0.8)), 1, 2000);
 		}
 		
 		for (int i = rand.nextInt(100) + 100; i > 0; i--)
