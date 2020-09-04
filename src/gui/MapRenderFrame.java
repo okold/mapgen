@@ -4,10 +4,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -15,7 +22,7 @@ import javax.swing.event.ChangeListener;
 
 import mapgen.*;
 
-public class MapRenderer extends JFrame {
+public class MapRenderFrame extends JFrame {
 
 	private static final long serialVersionUID = -349577414898672371L;
 	private static ImagePanel map_panel;
@@ -27,7 +34,7 @@ public class MapRenderer extends JFrame {
 	private static JLabel tilt_label;
 	private static JSlider tilt_slider;
 	
-	public MapRenderer(BiomePlanet planet)
+	public MapRenderFrame(BiomePlanet planet)
 	{
 		super("Map Renderer");
         setSize(1130,660);
@@ -35,9 +42,40 @@ public class MapRenderer extends JFrame {
         setLocationRelativeTo(null);
         
         this.planet = planet;
+        
+        JFileChooser file_chooser = new JFileChooser();
+        file_chooser.setSelectedFile(new File("map.png"));
+        
+        JMenuBar menu_bar = new JMenuBar();
+        JMenu file_menu = new JMenu("File");
+        
+        JMenuItem export_image = new JMenuItem("Save as PNG");
+        export_image.addActionListener( new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnVal = file_chooser.showSaveDialog(MapRenderFrame.this);
+	            if (returnVal == JFileChooser.APPROVE_OPTION) {
+	                try {
+						ImageIO.write(map_panel.getImage(), "png", file_chooser.getSelectedFile());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+	                }
+			}
+        	
+        });
+        
+        file_menu.add(export_image);
+        menu_bar.add(file_menu);
+        
+
+        
 		map_panel = new ImagePanel(createImage());
 		JPanel info_panel = createInfoPanel();
 		
+		setJMenuBar(menu_bar);
 		add(map_panel);
         add(info_panel, BorderLayout.SOUTH);
 	}
@@ -119,6 +157,7 @@ public class MapRenderer extends JFrame {
 			}
 		}
     	
+    	/*
     	// Black borders around coastlines
     	if (planet.getWaterLevel() > 0)
     	{
@@ -141,7 +180,7 @@ public class MapRenderer extends JFrame {
     			}
     		}
     	}
-    	
+    	*/
     	return image;
     }
     

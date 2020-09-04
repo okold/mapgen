@@ -8,7 +8,8 @@ public class Main {
 	public static void main(String[] args) 
 	{
 		BiomePlanet planet = new BiomePlanet(23.5, 100, new RecursivePeakMap(3));
-		MapRenderer window = new MapRenderer(planet);
+		MapRenderFrame window = new MapRenderFrame(planet);
+		window.randomize();
 		window.setVisible(true);
 	}
 
