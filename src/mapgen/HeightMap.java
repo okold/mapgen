@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class HeightMap extends Map 
 {
-	public static final int MAX_HEIGHT = 1000;
+	public static final int MAX_HEIGHT = 255;
 	private int[][] height_map;
 	
 	/**

@@ -133,7 +133,7 @@ public class BiomePlanet extends TiltedPlanet
 		Random rand = new Random();
 		height_map = new RecursivePeakMap(3);
 		height_map.generate();
-		water_level = rand.nextInt(HeightMap.MAX_HEIGHT);
-		setTilt(rand.nextInt(91));
+		//water_level = rand.nextInt(HeightMap.MAX_HEIGHT);
+		//setTilt(rand.nextInt(91));
 	}
 }
