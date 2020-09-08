@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import mapgen.BiomePlanet;
 import mapgen.HeightMap;
+import mapgen.HumidityMap;
 
 public class MapPanel extends ImagePanel {
 
@@ -58,9 +59,13 @@ public class MapPanel extends ImagePanel {
 		int temperate_colour = new Color(124, 156, 83).getRGB();
 		int tropical_colour = new Color(87, 133, 68).getRGB();
 		
+		int dry_colour = new Color(239,225,186).getRGB();
+		int wet_colour = tropical_colour;
+		
     	Point p = new Point(0,0);
     	
     	HeightMap height_map = planet.getHeightMap();
+    	HumidityMap humidity_map = planet.getHumidityMap();
     	
     	BufferedImage image = new BufferedImage(height_map.getWidth(),height_map.getHeight(),BufferedImage.TYPE_INT_ARGB);
     	
@@ -68,6 +73,7 @@ public class MapPanel extends ImagePanel {
 		{
 			for (p.x = 0; p.x < height_map.getWidth(); p.x++)
 			{
+				double humidity = humidity_map.getHumidity(p);
 				
 				if (planet.isCoast(p))
 				{
@@ -80,29 +86,24 @@ public class MapPanel extends ImagePanel {
 				else if(planet.isDeepOcean(p))
 				{
 					image.setRGB(p.x, p.y, deep_ocean_colour);
-				} 
+				}
 				else if(planet.isFrigid(p))
 				{
-					if(planet.isMountain(p))
-						image.setRGB(p.x, p.y, frigid_mountain_colour);
-					else
-						image.setRGB(p.x, p.y, frigid_colour);
+					image.setRGB(p.x, p.y, frigid_colour);
 				}
 				else if(planet.isTemperate(p))
 				{
-					if(planet.isMountainPeak(p))
-						image.setRGB(p.x, p.y, mountain_colour);
-					else if (planet.isMountain(p))
+					if (planet.isMountain(p))
 						image.setRGB(p.x, p.y, mountain_colour);
 					else
-						image.setRGB(p.x, p.y, temperate_colour);
+						image.setRGB(p.x, p.y, mixColours(temperate_colour,dry_colour,humidity));
 				}
 				else
 				{
 					if (planet.isMountain(p))
 						image.setRGB(p.x, p.y, mountain_colour);
 					else
-						image.setRGB(p.x, p.y, tropical_colour);
+						image.setRGB(p.x, p.y, mixColours(tropical_colour,temperate_colour,humidity));
 				}
 			}
 		}
@@ -137,5 +138,22 @@ public class MapPanel extends ImagePanel {
     	repaint();
     	
     	return image;
+	}
+	
+	public int mixColours(int RGB_1, int RGB_2, double strength)
+	{
+		Color c_2 = new Color(RGB_2);
+		Color c_1 = new Color(RGB_1);
+		
+		if (strength > 1)
+		{
+			strength = 1;
+		}
+		
+		int red = (int) (c_1.getRed() * strength) + (int) (c_2.getRed() * (1.0 - strength));
+		int green = (int) (c_1.getGreen() * strength) + (int) (c_2.getGreen() * (1.0 - strength));
+		int blue = (int) (c_1.getBlue() * strength) + (int) (c_2.getBlue() * (1.0 - strength));
+		
+		return new Color(red,green,blue).getRGB();
 	}
 }

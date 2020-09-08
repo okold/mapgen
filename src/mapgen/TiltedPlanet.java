@@ -22,7 +22,7 @@ public class TiltedPlanet
 	public static final double DEFAULT_TILT = 23.5; //Earth's tilt
 	public static final double MAX_TILT = 90;
 	
-	private double tilt;
+	protected double tilt;
 	
 	/**
 	 * Creates a circle of latitude calculator with Earth's axial tilt (23.5 degrees).

@@ -128,7 +128,7 @@ public class MapRenderFrame extends JFrame {
         
         // AXIAL TILT SLIDER
         tilt_label = new JLabel("Axial Tilt:");
-        tilt_slider = new JSlider(JSlider.HORIZONTAL, 0, 90, (int) this.planet.getTilt());
+        tilt_slider = new JSlider(JSlider.HORIZONTAL, 0, 44, (int) this.planet.getTilt());
 		info_panel.add(tilt_label);
 		info_panel.add(tilt_slider);
 		tilt_slider.addChangeListener(new ChangeListener() {

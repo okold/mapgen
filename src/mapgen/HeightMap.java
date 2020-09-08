@@ -74,48 +74,6 @@ public class HeightMap extends Map
 		return false;
 	}
 	
-	/**
-	 * Returns the adjusted x value, wrapping around the edges if
-	 * greater than or less than the bounds of the grid.
-	 */
-	public int getXAdj(int x)
-	{
-		while (x < 0)
-		{
-			x = getWidth() + x;
-		}
-		
-		return x % getWidth();
-	}
-	
-	/**
-	 * Returns the adjusted y value, reflecting it along the top
-	 * and bottom edges.
-	 * 
-	 * Gotta be a better way to do this.
-	 */
-	public int getYAdj(int y)
-	{
-		int y_adj = y;
-		
-		while (y_adj < 0)
-		{
-			y_adj *= -1;
-			
-			if (y_adj > getHeight())
-				y_adj = getHeight() - (y_adj - getHeight());
-		}
-		
-		if (y_adj >= getHeight())
-			y_adj = getHeight() - 1;
-		
-		if (y_adj < 0)
-		{
-			y_adj = 0;
-		}
-		
-		return y_adj;
-	}
 	
 	/**
 	 * Blends the values in the map by averaging each point using the heights
