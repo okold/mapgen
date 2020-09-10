@@ -58,7 +58,26 @@ public class HumidityMap extends Map
 				}
 				else
 				{
-					humidity_map[x][y] = 0;
+					double lat = getLatitude(y);
+					
+					if (lat < 0)
+					{
+						lat *= -1;
+					}
+					
+					if (lat >= getLatitude(horse_wind_height))
+					{
+						lat -= getLatitude(horse_wind_height); 
+						lat = (lat / getLatitude(horse_wind_height));
+					}
+					else
+					{
+						
+						lat = ((getLatitude(horse_wind_height) - lat) / getLatitude(horse_wind_height));
+					}
+					
+					
+					humidity_map[x][y] = lat;
 				}
 			}
 		}
@@ -78,9 +97,10 @@ public class HumidityMap extends Map
 					humidity_map[x][y] = 1;
 				}
 				else {
-					double avg = (humidity_map[x][y - 1]
+					double avg = (humidity_map[x][y]
+									+ humidity_map[x][y - 1]
 									+ humidity_map[x_prev][y-1]
-									+ humidity_map[x_b][y-1]) / 3;
+									+ humidity_map[x_b][y-1]) / 4;
 					
 					humidity_map[x][y] = wind_strength * avg;
 				}
@@ -89,9 +109,10 @@ public class HumidityMap extends Map
 					humidity_map[x][bottom_y] = 1;
 				}
 				else {
-					double avg = (humidity_map[x][bottom_y + 1]
+					double avg = (humidity_map[x][bottom_y]
+									+ humidity_map[x][bottom_y + 1]
 									+ humidity_map[x_prev][bottom_y+1] 
-									+ humidity_map[x_b][bottom_y+1]) / 3;
+									+ humidity_map[x_b][bottom_y+1]) / 4;
 					
 					humidity_map[x][bottom_y] = wind_strength * avg;
 				}
@@ -114,9 +135,20 @@ public class HumidityMap extends Map
 				}
 				else
 				{
-					double avg = (humidity_map[x][y+1] + humidity_map[x_prev][y+1] + humidity_map[x_b][y+1]) / 3;
+					double avg = (humidity_map[x][y] 
+									+ humidity_map[x][y+1] 
+									+ humidity_map[x_prev][y+1] 
+									+ humidity_map[x_b][y+1]) / 4;
 					
 					humidity_map[x][y] = wind_strength * avg;
+					
+					int h1 = height_map.getAltitude(new Point(x,y));
+					int h2 = height_map.getAltitude(new Point(x_prev,y+1));
+					
+					if (h1 < h2)
+					{
+						humidity_map[x][y] *= ((humidity_map[x][y] + ((h2 - h1) / HeightMap.MAX_HEIGHT)) / 2);
+					}
 				}
 				
 				
@@ -126,14 +158,25 @@ public class HumidityMap extends Map
 				}
 				else
 				{
-					double avg = (humidity_map[x][bottom_y-1] + humidity_map[x_prev][bottom_y-1] + humidity_map[x_b][bottom_y-1]) / 3;
+					double avg = (humidity_map[x][bottom_y]
+									+ humidity_map[x][bottom_y-1] 
+									+ humidity_map[x_prev][bottom_y-1] 
+									+ humidity_map[x_b][bottom_y-1]) / 4;
 					
 					humidity_map[x][bottom_y] = wind_strength * avg;
+					
+					int h1 = height_map.getAltitude(new Point(x,bottom_y));
+					int h2 = height_map.getAltitude(new Point(x_prev,bottom_y-1));
+					
+					if (h1 < h2)
+					{
+						humidity_map[x][bottom_y] *= ((humidity_map[x][bottom_y] + ((h2 - h1) / HeightMap.MAX_HEIGHT)) / 2);
+					}
 				}
 			}
 		}
 		
-		//Trade Winds
+		//Trade Winds / Tropical Zones
 		for (int y = trade_wind_height; y <= midpoint; y++)
 		{
 			int bottom_y = last_row - y;
@@ -148,22 +191,50 @@ public class HumidityMap extends Map
 					humidity_map[x][y] = 1;
 				}
 				else {
-					double avg = (humidity_map[x][y - 1]
+					double avg = (humidity_map[x][y]
+									+ humidity_map[x][y - 1]
 									+ humidity_map[x_prev][y-1]
-									+ humidity_map[x_b][y-1]) / 3;
+									+ humidity_map[x_b][y-1]) / 4;
 					
 					humidity_map[x][y] = wind_strength * avg;
+					
+					int h1 = height_map.getAltitude(new Point(x,y));
+					int h2 = height_map.getAltitude(new Point(x_prev,y+1));
+					
+					if (h1 > h2)
+					{
+						humidity_map[x][y] /= ((humidity_map[x][y] + ((h2 - h1) / HeightMap.MAX_HEIGHT)) / 2);
+					}
+					
+					if (humidity_map[x][y] > 0.5)
+					{
+						humidity_map[x][y] = (humidity_map[x][y] + 1) / 2;
+					}
 				}
 				
 				if (height_map.getAltitude(new Point(x,bottom_y)) <= water_level) {
 					humidity_map[x][bottom_y] = 1;
 				}
 				else {
-					double avg = (humidity_map[x][bottom_y + 1]
+					double avg = (humidity_map[x][bottom_y]
+									+ humidity_map[x][bottom_y + 1]
 									+ humidity_map[x_prev][bottom_y+1] 
-									+ humidity_map[x_b][bottom_y+1]) / 3;
+									+ humidity_map[x_b][bottom_y+1]) / 4;
 					
 					humidity_map[x][bottom_y] = wind_strength * avg;
+					
+					int h1 = height_map.getAltitude(new Point(x,bottom_y));
+					int h2 = height_map.getAltitude(new Point(x_prev,bottom_y+1));
+					
+					if (h1 > h2)
+					{
+						humidity_map[x][bottom_y] /= ((humidity_map[x][bottom_y] + ((h2 - h1) / HeightMap.MAX_HEIGHT)) / 2);
+					}
+					
+					if (humidity_map[x][bottom_y] > 0.5)
+					{
+						humidity_map[x][bottom_y] = (humidity_map[x][bottom_y] + 1) / 2;
+					}
 				}
 			}
 		}

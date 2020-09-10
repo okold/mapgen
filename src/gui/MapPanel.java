@@ -75,6 +75,27 @@ public class MapPanel extends ImagePanel {
 			{
 				double humidity = humidity_map.getHumidity(p);
 				
+				if (humidity < 0.125)
+				{
+					humidity = 0;
+				}
+				else if (humidity < 0.375)
+				{
+					humidity = 0.25;
+				}
+				else if (humidity < 0.625)
+				{
+					humidity = 0.5;
+				}
+				else if (humidity < 0.875)
+				{
+					humidity = 0.75;
+				}
+				else
+				{
+					humidity = 1;
+				}
+				
 				if (planet.isCoast(p))
 				{
 					image.setRGB(p.x, p.y, coast_colour);
@@ -89,7 +110,10 @@ public class MapPanel extends ImagePanel {
 				}
 				else if(planet.isFrigid(p))
 				{
-					image.setRGB(p.x, p.y, frigid_colour);
+					if (planet.isMountain(p))
+						image.setRGB(p.x, p.y, frigid_mountain_colour);
+					else
+						image.setRGB(p.x, p.y, frigid_colour);
 				}
 				else if(planet.isTemperate(p))
 				{
@@ -103,7 +127,7 @@ public class MapPanel extends ImagePanel {
 					if (planet.isMountain(p))
 						image.setRGB(p.x, p.y, mountain_colour);
 					else
-						image.setRGB(p.x, p.y, mixColours(tropical_colour,temperate_colour,humidity));
+						image.setRGB(p.x, p.y, mixColours(tropical_colour,dry_colour,humidity));
 				}
 			}
 		}

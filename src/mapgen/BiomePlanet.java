@@ -25,7 +25,7 @@ public class BiomePlanet extends TiltedPlanet
 		this.water_level = water_level;
 		this.height_map = height_map;
 		humidity_map = new HumidityMap(height_map.getScale());
-		wind_strength = 0.98;
+		wind_strength = 0.9;
 		humidity_map.generate(height_map, this, water_level, wind_strength);
 	}
 	
