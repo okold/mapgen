@@ -34,6 +34,7 @@ public class MapRenderFrame extends JFrame {
 	private static JSlider water_slider;
 	private static JLabel water_level_label;
 	private static JCheckBox mod_box;
+	private static JCheckBox biome_box;
 	private static JLabel tilt_label;
 	private static JSlider tilt_slider;
 	
@@ -121,10 +122,9 @@ public class MapRenderFrame extends JFrame {
 		planet.randomize();
 		
 		water_slider.setValue(planet.getWaterLevel());
-		water_level_label.setText("Water Level: " + water_slider.getValue());
-		//tilt_slider.setValue((int) planet.getTilt());
-		//tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
-		//tilt_label.setText("Axial Tilt: " + planet.getTilt());
+		water_level_label.setText("Water Level: ");
+		tilt_slider.setValue((int) planet.getTilt());
+		tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
 		
 		map_panel.generateImage();
 		
@@ -134,37 +134,37 @@ public class MapRenderFrame extends JFrame {
     {
     	JPanel info_panel = new JPanel();
 
-    	// HEIGHTMAP TOGGLE
+    	// RANDOMIZE BUTTON
+    			JButton randomize_button = new JButton("Randomize Height Map");
+    	        randomize_button.addActionListener(new ActionListener() {
+
+    				@Override
+    				public void actionPerformed(ActionEvent e) {
+    					randomize();
+    				}
+    	        });
+    			info_panel.add(randomize_button);
+    	
+    	// TOGGLES
     	mod_box = new JCheckBox("Height Map Mode", false);
-        
+    	biome_box = new JCheckBox("Simulate Climate", false);
+    	
         mod_box.addItemListener(new ItemListener() {   
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if (mod_box.isSelected())
-				{
-					map_panel.setMode(2);
-				}
-				else
-				{
-					map_panel.setMode(1);
-				}
-				map_panel.generateImage();
+				ModBoxLogic();
+			}    
+         });
+        
+        biome_box.addItemListener(new ItemListener() {   
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				ModBoxLogic();
 			}    
          });    
     	
         info_panel.add(mod_box);
-        
-		// RANDOMIZE BUTTON
-		JButton randomize_button = new JButton("Randomize Height Map");
-        randomize_button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				randomize();
-			}
-        });
-		info_panel.add(randomize_button);
-        
+        info_panel.add(biome_box);
 		
         // WATER LEVEL SLIDER
 		water_level_label = new JLabel("Water Level:");
@@ -176,17 +176,15 @@ public class MapRenderFrame extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				planet.setWaterLevel(water_slider.getValue());
-				water_level_label.setText("Water Level: " + water_slider.getValue());
+				water_level_label.setText("Water Level:");
 				map_panel.generateImage();
 				
 			}
         });
         
-  
-        /*
         // AXIAL TILT SLIDER
         tilt_label = new JLabel("Axial Tilt:");
-        tilt_slider = new JSlider(JSlider.HORIZONTAL, 0, 44, (int) this.planet.getTilt());
+        tilt_slider = new JSlider(JSlider.HORIZONTAL, 3, 44, (int) this.planet.getTilt());
 		info_panel.add(tilt_label);
 		info_panel.add(tilt_slider);
 		tilt_slider.addChangeListener(new ChangeListener() {
@@ -196,8 +194,31 @@ public class MapRenderFrame extends JFrame {
 				tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
 				map_panel.generateImage();
 			}
-		});*/
+		});
 		
 		return info_panel;
+    }
+    
+    private void ModBoxLogic()
+    {
+    	if (mod_box.isSelected())
+		{
+			map_panel.setMode(0);
+		}
+		else
+		{
+			if (biome_box.isSelected())
+			{
+				planet.setDoHumidity(true);
+				map_panel.setMode(2);
+			}
+			else
+			{
+				planet.setDoHumidity(false);
+				map_panel.setMode(1);
+			}
+			
+		}
+		map_panel.generateImage();
     }
 }

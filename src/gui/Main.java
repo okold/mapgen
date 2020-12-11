@@ -7,7 +7,7 @@ public class Main {
 
 	public static void main(String[] args) 
 	{
-		BiomePlanet planet = new BiomePlanet(23.5, 175, new RecursivePeakMap(3));
+		BiomePlanet planet = new BiomePlanet(23, 175, new RecursivePeakMap(3));
 		MapRenderFrame window = new MapRenderFrame(planet);
 		window.randomize();
 		window.setVisible(true);
