@@ -1,7 +1,6 @@
 package mapgen;
 
 import java.awt.Point;
-import java.util.Random;
 
 /**
  * A tilted planet with a height map and water level, determining

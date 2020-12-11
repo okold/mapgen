@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class RecursivePeakMap extends HeightMap {
 
-	private static final int MAX_SLOPE = 100;
+	//private static final int MAX_SLOPE = 100;
 	private static Random rand;
 	
 	public RecursivePeakMap()

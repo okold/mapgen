@@ -149,7 +149,7 @@ public class MapPanel extends ImagePanel {
     		int temperate_colour = new Color(124, 156, 83).getRGB();
     		int tropical_colour = new Color(87, 133, 68).getRGB();
     		int dry_colour = new Color(239,225,186).getRGB();
-    		int wet_colour = tropical_colour;
+    		//int wet_colour = tropical_colour;
         	HumidityMap humidity_map = planet.getHumidityMap();
         	
         	for (p.y = 0; p.y < height_map.getHeight(); p.y++)

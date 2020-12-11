@@ -62,20 +62,7 @@ public class MapRenderFrame extends JFrame {
 				int returnVal = file_chooser.showSaveDialog(MapRenderFrame.this);
 	            if (returnVal == JFileChooser.APPROVE_OPTION) {
 	                try {
-	                	int old_mode = map_panel.getMode();
-	                	if (old_mode != 1)
-	                	{
-	                		map_panel.setMode(1);
-		                	map_panel.generateImage();
-	                	}
-	                	
-						ImageIO.write(map_panel.getBufferedImage(), "png", file_chooser.getSelectedFile());
-						
-						if (map_panel.getMode() != old_mode)
-						{
-							map_panel.setMode(old_mode);
-							map_panel.generateImage();
-						}
+	                	ImageIO.write(map_panel.getBufferedImage(), "png", file_chooser.getSelectedFile());
 						
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -86,27 +73,7 @@ public class MapRenderFrame extends JFrame {
         	
         });
         
-        JMenuItem export_heightmap = new JMenuItem("Export Height Map");
-        export_heightmap.addActionListener( new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				file_chooser.setSelectedFile(new File("heightmap.png"));
-				int returnVal = file_chooser.showSaveDialog(MapRenderFrame.this);
-	            if (returnVal == JFileChooser.APPROVE_OPTION) {
-	                try {
-						ImageIO.write(planet.getHeightMap().getBufferedImage(), "png", file_chooser.getSelectedFile());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-                }
-			}
-        	
-        });
-        
         file_menu.add(export_image);
-        file_menu.add(export_heightmap);
         menu_bar.add(file_menu);
         
 		map_panel = new MapPanel(planet);
