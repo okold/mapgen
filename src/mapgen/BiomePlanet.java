@@ -13,7 +13,6 @@ public class BiomePlanet extends TiltedPlanet
 {
 	private int water_level;
 	private HeightMap height_map;
-	private HumidityMap humidity_map;
 	private double wind_strength;
 	
 	/**
@@ -24,9 +23,7 @@ public class BiomePlanet extends TiltedPlanet
 		super(tilt);
 		this.water_level = water_level;
 		this.height_map = height_map;
-		humidity_map = new HumidityMap(height_map.getScale());
 		wind_strength = 0.9;
-		humidity_map.generate(height_map, this, water_level, wind_strength);
 	}
 	
 	// getters and setters
@@ -39,7 +36,6 @@ public class BiomePlanet extends TiltedPlanet
 	public void setWaterLevel(int level)
 	{
 		water_level = level;
-		humidity_map.generate(height_map, this, water_level, wind_strength);
 	}
 	
 	public HeightMap getHeightMap()
@@ -47,14 +43,9 @@ public class BiomePlanet extends TiltedPlanet
 		return height_map;
 	}
 	
-	public HumidityMap getHumidityMap() {
-		return humidity_map;
-	}
-	
 	public void setHeightMap(HeightMap height_map)
 	{
 		this.height_map = height_map;
-		humidity_map.generate(height_map, this, water_level, wind_strength);
 	}
 	
 	// biome determination
@@ -143,7 +134,6 @@ public class BiomePlanet extends TiltedPlanet
 	{
 		height_map = new RecursivePeakMap(3);
 		height_map.generate();
-		humidity_map.generate(height_map, this, water_level, wind_strength);
 		//water_level = rand.nextInt(HeightMap.MAX_HEIGHT);
 		//setTilt(rand.nextInt(91));
 	}
@@ -151,6 +141,5 @@ public class BiomePlanet extends TiltedPlanet
 	public void setTilt(double tilt)
 	{
 		this.tilt = tilt;
-		humidity_map.generate(height_map, this, water_level, wind_strength);
 	}
 }

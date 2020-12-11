@@ -1,6 +1,8 @@
 package mapgen;
 
+import java.awt.Color;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 /**
@@ -150,5 +152,21 @@ public class HeightMap extends Map
 	{
 		Random rand = new Random();
 		return new Point(rand.nextInt(getWidth()), rand.nextInt(getHeight()));
+	}
+	
+	public BufferedImage getBufferedImage()
+	{
+		Point p = new Point(0,0);
+		BufferedImage image = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
+
+    	for (p.y = 0; p.y < getHeight(); p.y++)
+		{
+			for (p.x = 0; p.x < getWidth(); p.x++)
+			{
+				int val = height_map[p.x][p.y];
+				image.setRGB(p.x, p.y, new Color(val, val, val).getRGB());
+			}
+		}
+		return image;
 	}
 }

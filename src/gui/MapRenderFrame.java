@@ -3,11 +3,14 @@ package gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,20 +33,21 @@ public class MapRenderFrame extends JFrame {
 	
 	private static JSlider water_slider;
 	private static JLabel water_level_label;
+	private static JCheckBox mod_box;
 	private static JLabel tilt_label;
 	private static JSlider tilt_slider;
 	
 	public MapRenderFrame(BiomePlanet planet)
 	{
 		super("Map Renderer");
-        setSize(1130,660);
+        setSize(planet.getHeightMap().getWidth(),planet.getHeightMap().getHeight() + 90);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setResizable(false);
         
         this.planet = planet;
         
         JFileChooser file_chooser = new JFileChooser();
-        file_chooser.setSelectedFile(new File("map.png"));
         
         JMenuBar menu_bar = new JMenuBar();
         JMenu file_menu = new JMenu("File");
@@ -53,23 +57,56 @@ public class MapRenderFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				file_chooser.setSelectedFile(new File("map.png"));
 				int returnVal = file_chooser.showSaveDialog(MapRenderFrame.this);
 	            if (returnVal == JFileChooser.APPROVE_OPTION) {
 	                try {
+	                	int old_mode = map_panel.getMode();
+	                	if (old_mode != 1)
+	                	{
+	                		map_panel.setMode(1);
+		                	map_panel.generateImage();
+	                	}
+	                	
 						ImageIO.write(map_panel.getBufferedImage(), "png", file_chooser.getSelectedFile());
+						
+						if (map_panel.getMode() != old_mode)
+						{
+							map_panel.setMode(old_mode);
+							map_panel.generateImage();
+						}
+						
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-	                }
+	            }
+			}
+        	
+        });
+        
+        JMenuItem export_heightmap = new JMenuItem("Export Height Map");
+        export_heightmap.addActionListener( new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				file_chooser.setSelectedFile(new File("heightmap.png"));
+				int returnVal = file_chooser.showSaveDialog(MapRenderFrame.this);
+	            if (returnVal == JFileChooser.APPROVE_OPTION) {
+	                try {
+						ImageIO.write(planet.getHeightMap().getBufferedImage(), "png", file_chooser.getSelectedFile());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+                }
 			}
         	
         });
         
         file_menu.add(export_image);
+        file_menu.add(export_heightmap);
         menu_bar.add(file_menu);
-        
-
         
 		map_panel = new MapPanel(planet);
 		JPanel info_panel = createInfoPanel();
@@ -85,9 +122,9 @@ public class MapRenderFrame extends JFrame {
 		
 		water_slider.setValue(planet.getWaterLevel());
 		water_level_label.setText("Water Level: " + water_slider.getValue());
-		tilt_slider.setValue((int) planet.getTilt());
-		tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
-		tilt_label.setText("Axial Tilt: " + planet.getTilt());
+		//tilt_slider.setValue((int) planet.getTilt());
+		//tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
+		//tilt_label.setText("Axial Tilt: " + planet.getTilt());
 		
 		map_panel.generateImage();
 		
@@ -97,6 +134,26 @@ public class MapRenderFrame extends JFrame {
     {
     	JPanel info_panel = new JPanel();
 
+    	// HEIGHTMAP TOGGLE
+    	mod_box = new JCheckBox("Height Map Mode", false);
+        
+        mod_box.addItemListener(new ItemListener() {   
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (mod_box.isSelected())
+				{
+					map_panel.setMode(2);
+				}
+				else
+				{
+					map_panel.setMode(1);
+				}
+				map_panel.generateImage();
+			}    
+         });    
+    	
+        info_panel.add(mod_box);
+        
 		// RANDOMIZE BUTTON
 		JButton randomize_button = new JButton("Randomize Height Map");
         randomize_button.addActionListener(new ActionListener() {
@@ -125,7 +182,8 @@ public class MapRenderFrame extends JFrame {
 			}
         });
         
-        
+  
+        /*
         // AXIAL TILT SLIDER
         tilt_label = new JLabel("Axial Tilt:");
         tilt_slider = new JSlider(JSlider.HORIZONTAL, 0, 44, (int) this.planet.getTilt());
@@ -138,7 +196,7 @@ public class MapRenderFrame extends JFrame {
 				tilt_label.setText("Axial Tilt: " + tilt_slider.getValue());
 				map_panel.generateImage();
 			}
-		});
+		});*/
 		
 		return info_panel;
     }
